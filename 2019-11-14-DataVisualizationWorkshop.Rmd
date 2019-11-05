@@ -1,0 +1,249 @@
+---
+title: "Data Visualization"
+subtitle: "with R and ggplot2"
+author: "Dwight Wynne"
+date: "November 14, 2019"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+# Why Visualize Data?
+
+- Humans are visual animals!
+
+--
+
+- We have a mind for pictures, not so much for numbers
+
+---
+background-image: url(foxnews_piechart.png)
+
+# Data Visualization is Hard!
+
+.footnote[
+https://flowingdata.com/2009/11/26/fox-news-makes-the-best-pie-chart-ever/
+]
+
+---
+class: top, left
+
+# Why Use R?
+
+- "Excel still encourages people to produce bad graphs - in some respects more than in the past because it now offers even more dysfunctional choices."<sup>1</sup>
+
+--
+
+- R (with the ggplot2 package) gives you almost total control over every aspect of your graphs
+
+--
+
+- It's harder to do but easier to do *well*!
+
+.footnote[
+[1] Stephen Few, *Show Me the Numbers*
+]
+
+---
+
+# Getting Started with R
+
+- Open R Studio
+
+- Open a new script: File $\rightarrow$ New File $\rightarrow$ R Script or Ctrl/Cmd + Shift + N
+
+--
+
+- All of the work we do tonight will go in this script
+
+---
+
+# Getting Started with R
+
+At the top of your script file, you want to load the R packages you are going to need:
+
+```{r load ggplot2, warning=FALSE}
+library(ggplot2) #<<
+# Rest of code will go here
+```
+
+
+---
+
+# Getting Started with R
+
+???
+
+code to import data
+
+---
+
+Bar graphs section
+
+???
+
+Include a misleading bar graph where the axis doesn't start at 0!
+
+Because it's important for BI, may do an example with numerical values by category
+
+---
+
+What to look for in a bar graph
+
+- Compare heights
+
+- Unusually high or low bars
+
+---
+
+Histograms section
+
+???
+
+Highlight that you have really easy control over the bins! This is very difficult to do in Excel!
+
+---
+
+What to look for in a histogram
+
+- Center of distribution (mode is often easiest to guess at from histogram)
+
+- Variability of distribution (I like to look at the smallest and largest values on x-axis)
+
+- Shape of distribution (do we see a long right tail or long left tail? Multiple modes?)
+
+---
+
+Scatterplots and line graphs section
+
+---
+
+What to look for in a scatterplot/line graph
+
+- Trend direction and strength
+
+- Outliers
+
+---
+
+Theme elements (theme_bw and theme_minimal)
+
+---
+
+Adding title and axis labels
+
+---
+
+Faceting: working by group
+
+---
+
+Changing colors
+
+???
+
+c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") is great for color-blind: http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
+
+---
+
+Adding Annotations
+
+---
+
+# Presenting with Graphs
+
+Your audience typically has a limited idea of your data and why it's important. Walking an audience through a graph is an art form, but there is a structure to it.
+
+I walk my audiences through graphs in this order:
+
+1. Subject
+
+1. Axes and color
+
+1. Main points
+
+1. Actionable takeaways
+
+---
+
+# Subject
+
+- *Never* jump in immediately with the point you want to make!
+
+- You need to quickly make sure everyone understands *what* you have graphed
+
+- Even if it's just filler, your audience will appreciate the pause to take in the graph with their own eyes
+
+Examples:
+
+"This graph shows the relationship between employee age and health care costs."
+
+"This graph shows our department's expenses over the past three years."
+
+---
+
+# Axes and Color
+
+- Before you can tell the audience where to direct their attention, you have to tell them what they are attending to!
+
+- Quickly explain what the x-axis and y-axis represent and include units
+
+- These axes should be also labeled with variable names/descriptions (exception: blindingly obvious cases like dates, times, and locations)
+
+- If color is important (not just cosmetic), mention what the color represents.
+
+Examples:
+
+"The x-axis represents employee age and the y-axis represents our health care expenditures for them in dollars."
+
+"The x-axis shows the month and the y-axis shows the estimated expenses in thousands of dollars. The black line represents direct costs and the blue line represents indirect."
+
+---
+
+# Main Points
+
+- Now that you have oriented your audience, you can easily bring their attention to the parts of the graph you want to highlight
+
+- Communicate the same things that you looked for when you were creating the graph
+
+- Often it helps to literally point these things out (using a finger or laser pointer)!
+
+Examples:
+
+"In general, as expected, health care costs rise with age, but we have a few outlier employees that are costing less than expected."
+
+"The general trend is that indirect costs have skyrocketed while direct costs have barely increased."
+
+---
+
+# Actionable Takeaways
+
+- This is not always your place!
+
+- Especially as a BI professional or data scientist, your job is to break down complex information for decision makers who have a better big-picture view.
+
+- If you are the decision maker, or asked for your opinion, you should use the insights from the graph to suggest possible actions
+
+- This step often requires looking at other information beyond just what is in your graphs - it may be elsewhere in your data or external to it
+
+Examples:
+
+"Are these employees actually unusually healthy, or are they neglecting their health and likely to cost us more money in the long run? We should investigate."
+
+"We anticipate that corporate will be giving us more projects to reduce our indirect cost rate."
+
+---
+
+Graph Example 1
+
+---
+
+Graph Example 2
