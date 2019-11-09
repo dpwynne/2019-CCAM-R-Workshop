@@ -46,6 +46,11 @@ class: top, left
 
 - "Excel still encourages people to produce bad graphs - in some respects more than in the past because it now offers even more dysfunctional choices."&lt;sup&gt;1&lt;/sup&gt;
 
+
+.footnote[
+[1] Stephen Few, *Show Me the Numbers*
+]
+
 --
 
 - R (with the ggplot2 package) gives you almost total control over every aspect of your graphs
@@ -54,9 +59,52 @@ class: top, left
 
 - It's harder to do but easier to do *well*!
 
-.footnote[
-[1] Stephen Few, *Show Me the Numbers*
+
+---
+
+# Warm-Up Exercise
+
+.pull-left[
+![](option1.png)
+![](option4.png)
 ]
+
+.pull-right[
+![](option2.png)
+![](option3.png)
+]
+???
+
+Four graphs showing the average home price in four ZIP codes in July-September 2019
+
+1) Which of the four graphs is best for this purpose?
+2) Is there a better way to display this information?
+3) What information is NOT being shown here?
+
+---
+class: center, middle
+# Overview
+
+Tonight we will create the following graphs:
+
+![](cereal_barplot.png)
+
+---
+class: center, middle
+# Overview
+
+Tonight we will create the following graphs:
+
+![](housing_scatterplot.png)
+
+---
+class: center, middle
+# Overview
+
+Tonight we will create the following graphs:
+
+![](crime_lineplot.png)
+
 
 ---
 
@@ -64,7 +112,7 @@ class: top, left
 
 - Open R Studio
 
-- Open a new script: File `\(\rightarrow\)` New File `\(\rightarrow\)` R Script or Ctrl/Cmd + Shift + N
+- Open a new script: File `\(\rightarrow\)` New File `\(\rightarrow\)` R Script
 
 --
 
@@ -87,45 +135,343 @@ At the top of your script file, you want to load the R packages you are going to
 
 # Getting Started with R
 
+Let's load the data first. We should see three datasets:
+
+- cereal_calories
+- housing
+- lacrime2017
+
+--
+
+
+```r
+library(readr)
+cereal &lt;- read_csv("cereal_calories.csv")
+housing &lt;- read_csv("housing.csv")
+crime &lt;- read_csv("lacrime2017.csv")
+```
+
+- Click the `Import Dataset` button to import the data
+
+- Select `From Text (readr)` if that option is available
+
+- Find the file
+
+- In the `Import Options` box, change the names as shown in the code above
+
+---
+
+# Graph Workflow with ggplot2
+
+Start by setting up the graph:
+
+```r 
+* ggplot(data = dataset, 
+*        mapping = aes(x = x-variable, y = y-variable))
+```
+
+--
+
+Then indicate what type of graph to make, e.g.:
+
+```r
+* + geom_bar() # for a barplot
+* + geom_line() # for a line graph
+```
+
+--
+
+Then customize the graph, e.g.:
+
+```r
+* + labs() # add or change axis labels
+* + theme() # customize elements of the plot
+```
+--
+
+Save your graph after each step!
+
+--
+
+Once you're happy with your graph, `print` it
+
+---
+
+# Graph Workflow with ggplot2
+
+When in doubt:
+
+- What am I trying to customize?
+
+- Search online for the function and argument that does it
+
+- Add it to your workflow with `+`
+
+---
+
+# Bar Graphs
+
+- Used to compare values between categories
+
+- Most often, the number or proportion of observations in each category
+
+- For BI purposes, often look at a summary value (such as average) in each category
+
+---
+
+# Bar Graphs
+
+For counts, use `geom_bar()`:
+
+
+```r
+zip_bargraph &lt;- ggplot(data = housing, 
+                       mapping = aes(x = as.factor(ZipCode))
+*                      ) + geom_bar()
+print(zip_bargraph)
+```
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+---
+
+# Bar Graphs
+
+For numbers, use `geom_col()`:
+
+
+```r
+zip_bargraph2 &lt;- ggplot(data = housing, 
+                        mapping = aes(x = as.factor(ZipCode), y = Price)
+*                       ) + geom_col()
+print(zip_bargraph2)
+```
+
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+---
+
+# Example: Creating a Bar Graph
+
+- Let's look at the average calories in cereal for each of the four companies in our dataset
+
+- By default, if there are multiple values in the dataset, the graph will add them
+
+- It's easiest to create a separate dataset that contains the averages:
+
+--
+
+
+```r
+library(dplyr)
+cereal_averages &lt;- cereal %&gt;% 
+  group_by(Manufacturer) %&gt;%
+  summarize(Calories = mean(Calories))
+```
+
+- If you can't run this code, import the cereal_averages.csv dataset
+
+--
+
+- If you want to know more about how this code works, come back December 5!
+
+---
+
+# Example: Creating a Bar Graph
+
+Now let's set up our graph:
+
+.pull-left[
+
+```r
+cereal1 &lt;- ggplot(cereal_averages, 
+                  aes(x = Manufacturer, y = Calories)) + 
+           geom_col()
+print(cereal1)
+```
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+]
+
+---
+# Example: Creating a Bar Graph
+
+Let's fix a couple of things here.
+
+First, let's change the code to add color.
+
+.pull-left[
+
+```r
+cereal1 &lt;- ggplot(cereal_averages, 
+                  aes(x = Manufacturer, y = Calories)) + 
+*geom_col(aes(fill = Manufacturer))
+print(cereal1)
+```
+
+- Adding colors added a legend!
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+]
+
+---
+# Example: Creating a Bar Graph
+
+Let's fix a couple of things here.
+
+Next, let's reorder the bars.
+
+.pull-left[
+
+```r
+cereal1 &lt;- ggplot(cereal_averages, 
+*                 aes(x = reorder(Manufacturer, -Calories),
+                      y = Calories)) + 
+geom_col(aes(fill = Manufacturer))
+print(cereal1)
+```
+
+- The `reorder` command changes the bar order
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Example: Creating a Bar Graph
+
+Now let's customize our graph, starting with the axis labels.
+
+We can just add customization to the already saved plot!
+
+.pull-left[
+
+```r
+cereal2 &lt;- cereal1 + 
+* labs(x = "Company", y = "Calories")
+print(cereal2)
+```
+
+]
+
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+]
+
+---
+# Example: Creating a Bar Graph
+
+Now let's add our title:
+
+.pull-left[
+
+```r
+cereal3 &lt;- cereal2 + 
+* ggtitle("Average Calories by Cereal Manufacturer")
+print(cereal3)
+```
+
+]
+
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+]
+
+---
+# Example: Creating a Bar Graph
+
+Now let's fix the colors. I like to use a color-blind palette&lt;sup&gt;1&lt;/sup&gt;:
+
+
+```r
+cbPalette &lt;- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+```
+
+.pull-left[
+
+```r
+cereal4 &lt;- cereal3 + 
+* scale_fill_manual(values = cbPalette[c(8,4,6,7)])
+print(cereal4)
+```
+
+]
+
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+]
+
+.footnote[
+[1] https://jfly.uni-koeln.de/color/
+]
+
+---
+# Example: Creating a Bar Graph
+
+Finally, we have some cleaning to do:
+
+- Get rid of the legend
+
+.pull-left[
+
+```r
+cereal5 &lt;- cereal4 + 
+* theme(legend.position = "none")
+print(cereal5)
+```
+
+]
+
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Example: Creating a Bar Graph
+
+Finally, we have some cleaning to do:
+
+- Center the title
+
+.pull-left[
+
+```r
+cereal6 &lt;- cereal5 + 
+* theme(plot.title = element_text(hjust = 0.5))
+print(cereal6)
+```
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Reading a Bar Graph
+
+- Compare the heights of the bars to compare the categories
+
+- The bars in the bar graph *must* start at 0 for the heights of the bars to be comparable
+
+![](cereal_barplot.png)
+
 ???
 
-code to import data
-
----
-
-Bar graphs section
-
-???
-
-Include a misleading bar graph where the axis doesn't start at 0!
-
-Because it's important for BI, may do an example with numerical values by category
-
----
-
-What to look for in a bar graph
-
-- Compare heights
-
-- Unusually high or low bars
-
----
-
-Histograms section
-
-???
-
-Highlight that you have really easy control over the bins! This is very difficult to do in Excel!
-
----
-
-What to look for in a histogram
-
-- Center of distribution (mode is often easiest to guess at from histogram)
-
-- Variability of distribution (I like to look at the smallest and largest values on x-axis)
-
-- Shape of distribution (do we see a long right tail or long left tail? Multiple modes?)
+With `ggplot2` it's essentially impossible to create a misleading graph!
 
 ---
 
@@ -150,14 +496,6 @@ Adding title and axis labels
 ---
 
 Faceting: working by group
-
----
-
-Changing colors
-
-???
-
-c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") is great for color-blind: http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
 
 ---
 
@@ -246,6 +584,14 @@ Examples:
 "Are these employees actually unusually healthy, or are they neglecting their health and likely to cost us more money in the long run? We should investigate."
 
 "We anticipate that corporate will be giving us more projects to reduce our indirect cost rate."
+
+---
+
+Graph Example 1
+
+---
+
+Graph Example 2
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
