@@ -19,19 +19,9 @@ class: center, middle, inverse, title-slide
 
 ---
 
-
-
-
-# Why Visualize Data?
-
-- Humans are visual animals!
-
---
-
-- We have a mind for pictures, not so much for numbers
-
----
 background-image: url(foxnews_piechart.png)
+
+
 
 # Data Visualization is Hard!
 
@@ -88,14 +78,6 @@ class: center, middle
 Tonight we will create the following graphs:
 
 ![](cereal_barplot.png)
-
----
-class: center, middle
-# Overview
-
-Tonight we will create the following graphs:
-
-![](housing_scatterplot.png)
 
 ---
 class: center, middle
@@ -329,7 +311,7 @@ Next, let's reorder the bars.
 
 ```r
 cereal1 &lt;- ggplot(cereal_averages, 
-*                 aes(x = reorder(Manufacturer, -Calories),
+*                 aes(x = reorder(Manufacturer, Calories),
                       y = Calories)) + 
 geom_col(aes(fill = Manufacturer))
 print(cereal1)
@@ -347,15 +329,15 @@ print(cereal1)
 
 # Example: Creating a Bar Graph
 
-Now let's customize our graph, starting with the axis labels.
+Once the plot is set up correctly, we can just add customization to the already saved plot!
 
-We can just add customization to the already saved plot!
+Let's start by renaming axis labels:
 
 .pull-left[
 
 ```r
 cereal2 &lt;- cereal1 + 
-* labs(x = "Company", y = "Calories")
+* labs(x = "", y = "Calories")
 print(cereal2)
 ```
 
@@ -366,10 +348,16 @@ print(cereal2)
 ![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 ]
 
+???
+
+In general we want to label our axes. However, when the category labels make the x-axis variable obvious, don't waste the space by adding the label
+
 ---
 # Example: Creating a Bar Graph
 
-Now let's add our title:
+Once the plot is set up correctly, we can just add customization to the already saved plot!
+
+And now add a title:
 
 .pull-left[
 
@@ -400,7 +388,7 @@ cbPalette &lt;- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B
 
 ```r
 cereal4 &lt;- cereal3 + 
-* scale_fill_manual(values = cbPalette[c(8,4,6,7)])
+* scale_fill_manual(values = cbPalette[c(1,1,1,7)])
 print(cereal4)
 ```
 
@@ -416,6 +404,34 @@ print(cereal4)
 ]
 
 ---
+
+# Interlude: A Note on Color
+
+- Color should be used to *distinguish* and/or *emphasize*
+
+- If color is simply cosmetic, black and white is always better!&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+[1] Except when bosses demand color
+]
+
+--
+
+.pull-left[
+
+- What purpose does color serve in this graph?
+
+]
+
+.pull-right[
+
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+]
+
+
+
+---
 # Example: Creating a Bar Graph
 
 Finally, we have some cleaning to do:
@@ -426,7 +442,7 @@ Finally, we have some cleaning to do:
 
 ```r
 cereal5 &lt;- cereal4 + 
-* theme(legend.position = "none")
+* guides(fill = FALSE)
 print(cereal5)
 ```
 
@@ -434,7 +450,7 @@ print(cereal5)
 
 
 .pull-right[
-![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 ]
 
 
@@ -456,7 +472,7 @@ print(cereal6)
 ]
 
 .pull-right[
-![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -475,47 +491,381 @@ With `ggplot2` it's essentially impossible to create a misleading graph!
 
 ---
 
-Scatterplots and line graphs section
+# Depicting Relationships
+
+- Can use either points or lines
+
+- Use points to show relationships between two variables
+
+- Use lines to show changes over time
 
 ---
 
-What to look for in a scatterplot/line graph
+# Scatterplots
 
-- Trend direction and strength
+- Use `geom_point()` to draw the points
 
-- Outliers
+- Use `geom_jitter()` if the points tend to overlap
+
+
+```r
+sqft_scatter &lt;- ggplot(data = housing, 
+                        mapping = aes(x = SqFt, y = Price)
+*                       ) + geom_jitter()
+print(sqft_scatter)
+```
+
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+
+???
+
+You will sacrifice some accuracy but be able to better see the trend
 
 ---
 
-Theme elements (theme_bw and theme_minimal)
+# Line Graphs
+
+- Use `geom_line()` to draw the line
+
+
+```r
+housing.month &lt;- housing %&gt;% group_by(Month) %&gt;% summarize(AvgPrice = mean(Price))
+housing_linegraph &lt;- ggplot(data = housing.month, 
+                        mapping = aes(x = Month, y = AvgPrice)
+*                       ) + geom_line()
+print(housing_linegraph)
+```
+
+
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 
 ---
 
-Adding title and axis labels
+# Example: Creating a Line Graph
+
+- Let's look at crime trends for four crimes (battery, burglary, vehicle theft, and identity theft) in 2017 in Los Angeles
+
+- This data is in the `crime` dataset we imported earlier
+
+
+```r
+print(crime)
+```
+
+```
+## # A tibble: 48 x 3
+##    month `Crime Name`   ncrimes
+##    &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;
+##  1     1 Burglary          1301
+##  2     1 Identity Theft    1131
+##  3     1 Vehicle Theft     1755
+##  4     1 Battery           1369
+##  5     2 Burglary          1173
+##  6     2 Identity Theft     912
+##  7     2 Vehicle Theft     1462
+##  8     2 Battery           1315
+##  9     3 Burglary          1266
+## 10     3 Identity Theft    1141
+## # ... with 38 more rows
+```
 
 ---
 
-Faceting: working by group
+# Example: Creating a Line Graph
+
+Just like last time, let's start by setting up our graph:
+
+.pull-left[
+
+```r
+crime1 &lt;- ggplot(crime, 
+                  aes(x = month, y = ncrimes)) + 
+           geom_line()
+print(crime1)
+```
+
+- Line graphs just connect the dots in row order
+
+- We need to split up so we get one line per crime type
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+]
 
 ---
 
-Adding Annotations
+# Example: Creating a Line Graph
+
+Let's pass a `color` aesthetic to `geom_line` to indicate that we want different color lines for each crime type:
+
+.pull-left[
+
+```r
+crime2 &lt;- ggplot(crime, 
+                  aes(x = month, y = ncrimes)) + 
+*          geom_line(aes(color = `Crime Name`))
+print(crime2)
+```
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Example: Creating a Line Graph
+
+You can change the default look of the plot background and axis using `theme`s:
+
+.pull-left[
+
+```r
+crime3 &lt;- crime2 + 
+* theme_bw()
+print(crime3)
+```
+
+- I like `theme_bw()` and `theme_minimal()`
+
+- The main difference is that `bw` adds a black frame around the graph
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Example: Creating a Line Graph
+
+The most obvious issue is that months are shown as numbers:
+
+
+```r
+month.labels &lt;- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+```
+
+.pull-left[
+
+```r
+crime4 &lt;- crime3 + 
+* scale_x_continuous(
+*   breaks = seq(1,12),
+*   labels = month.labels
+    ) 
+print(crime4)
+```
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Example: Creating a Line Graph
+
+This created another issue: we have phantom gridlines that don't mean anything.
+
+.pull-left[
+
+```r
+crime5 &lt;- crime4 + 
+* theme(panel.grid.minor.x = element_blank())
+print(crime5)
+```
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+]
+
+
+
+---
+
+# Example: Creating a Line Graph
+
+Now, let's fix our axis labels and add a title:
+
+.pull-left[
+
+```r
+crime6 &lt;- crime5 + 
+* labs(x = "", y = "Number of Crimes") +
+* ggtitle("Crime in 2017 in Los Angeles")
+print(crime6)
+```
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+]
+
+
+???
+
+Note here that the month is now intuitive, and so we don't need an axis label
+
+---
+
+# Example: Creating a Line Graph
+
+Finally, let's fix the legend:
+
+.pull-left[
+
+```r
+crime7 &lt;- crime6 + 
+* scale_color_manual(name = "",
+*                    breaks = c("Battery","Vehicle Theft","Burglary", "Identity Theft"),
+*                    values = cbPalette[c(1,2,3,4)])
+
+print(crime7)
+```
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Reading a Line Graph
+
+- Look at general and seasonal trends within lines
+
+- Compare location and trend between lines using the same y-axis
+
+- Look for unusually low/high values or values that don't fit the trend
+
+![](crime_lineplot.png)
+
+---
+
+# Beyond Today
+
+- Instead of using color, you can use `facet_wrap` to create one pane for each category or `facet_grid` to create a grid of panes at combinations of categories:
+
+.pull-left[
+
+```r
+crime_facet &lt;- crime1 + 
+* facet_wrap(~`Crime Name`)
+print(crime_facet)
+```
+
+
+- With smart use of color/line types and faceting, you can display up to 3 categorical variables on your line graph!
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Beyond Today
+
+- You can use the `annotate` command to add text, lines, and other things on top of the graph:
+
+.pull-left[
+
+```r
+crime_annotated &lt;- crime7 + 
+* annotate(geom = "text",
+*          x = 11, y = 900,
+*          label = "Identity Theft\nGoing Down"
+  )
+print(crime_annotated)
+```
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+]
+
+- Placing annotations can involve a lot of trial-and-error!
+
+---
+
+# Beyond Today
+
+- The default ggplot2 font size is way too small for presentations
+
+- Use `theme` with `element_text(size = )` to change the font size:
+
+.pull-left[
+
+```r
+cereal_fontsize &lt;- cereal5 + 
+* theme(axis.title = element_text(size = 18),
+*       axis.text = element_text(size = 14),
+        plot.title = element_text(hjust = 0.5,
+*                                 size = 24)
+        )
+print(cereal_fontsize)
+```
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Beyond Today
+
+- The default ggplot2 font size is way too small for presentations
+
+- Use `theme` with `element_text(size = )` to change the font size:
+
+.pull-left[
+
+```r
+crime_fontsize &lt;- crime7 + 
+* theme(axis.title = element_text(size = 18),
+*       axis.text = element_text(size = 14),
+        plot.title = element_text(hjust = 0.5,
+                                  size = 24),
+*       legend.text = element_text(size = 14)
+        )
+print(crime_fontsize)
+```
+
+]
+
+.pull-right[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+]
 
 ---
 
 # Presenting with Graphs
 
-Your audience typically has a limited idea of your data and why it's important. Walking an audience through a graph is an art form, but there is a structure to it.
+- Your audience typically has a limited idea of your data and why it's important.
 
-I walk my audiences through graphs in this order:
+- Walking an audience through a graph is an art form, but there is a structure to it.
+
+--
+
+- I walk my audiences through graphs in this order:
 
 1. Subject
 
-1. Axes and color
+1. Features
 
-1. Main points
-
-1. Actionable takeaways
+1. Highlights
 
 ---
 
@@ -525,73 +875,162 @@ I walk my audiences through graphs in this order:
 
 - You need to quickly make sure everyone understands *what* you have graphed
 
-- Even if it's just filler, your audience will appreciate the pause to take in the graph with their own eyes
+--
 
-Examples:
+.pull-left[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+]
 
-"This graph shows the relationship between employee age and health care costs."
+.pull-right[
 
-"This graph shows our department's expenses over the past three years."
+- This graph shows the nutritional content of cereal from different manufacturers
 
----
+]
 
-# Axes and Color
+???
 
-- Before you can tell the audience where to direct their attention, you have to tell them what they are attending to!
-
-- Quickly explain what the x-axis and y-axis represent and include units
-
-- These axes should be also labeled with variable names/descriptions (exception: blindingly obvious cases like dates, times, and locations)
-
-- If color is important (not just cosmetic), mention what the color represents.
-
-Examples:
-
-"The x-axis represents employee age and the y-axis represents our health care expenditures for them in dollars."
-
-"The x-axis shows the month and the y-axis shows the estimated expenses in thousands of dollars. The black line represents direct costs and the blue line represents indirect."
+Even if it's just filler, your audience will appreciate the pause to take in the graph with their own eyes
 
 ---
 
-# Main Points
+# Subject
+
+- *Never* jump in immediately with the point you want to make!
+
+- You need to quickly make sure everyone understands *what* you have graphed
+
+.pull-left[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+- This graph depicts crime patterns in Los Angeles in 2017
+
+]
+
+
+---
+
+# Features
+
+- What do the axes represent? Include units when necessary!
+
+- Are different groups shown in different colors?
+
+--
+
+.pull-left[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+- This graph shows the nutritional content of cereal from different manufacturers
+
+- The y-axis shows the average calories from each manufacturer
+
+- Quaker is in orange and its competitors are in black
+
+]
+
+---
+
+# Features
+
+- What do the axes represent? Include units when necessary!
+
+- Are different groups shown in different colors?
+
+.pull-left[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+- This graph depicts crime patterns in Los Angeles in 2017
+
+- Battery is in black, vehicle theft in green, burglary in orange, and identity theft in blue
+
+- The y-axis shows the total number of crimes of each type in each month
+
+]
+
+???
+
+Before you can tell the audience where to direct their attention, you have to tell them what they are attending to!
+
+---
+# Highlights 
 
 - Now that you have oriented your audience, you can easily bring their attention to the parts of the graph you want to highlight
 
-- Communicate the same things that you looked for when you were creating the graph
+- Often it helps to literally point these things out (using a finger or laser pointer)!
+
+- Focus on highlighting:
+
+--
+
+1. Important values/trends
+
+--
+
+1. Unusual or unexpected values/trends
+
+--
+
+1. Differences in values/trends between groups
+
+
+---
+
+# Highlights
+
+- Now that you have oriented your audience, you can easily bring their attention to the parts of the graph you want to highlight
 
 - Often it helps to literally point these things out (using a finger or laser pointer)!
 
-Examples:
+.pull-left[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+]
 
-"In general, as expected, health care costs rise with age, but we have a few outlier employees that are costing less than expected."
+.pull-right[
 
-"The general trend is that indirect costs have skyrocketed while direct costs have barely increased."
+- On average, Quaker cereals have lower calories than Post and Kellogg's but not as low as General Mills
 
----
-
-# Actionable Takeaways
-
-- This is not always your place!
-
-- Especially as a BI professional or data scientist, your job is to break down complex information for decision makers who have a better big-picture view.
-
-- If you are the decision maker, or asked for your opinion, you should use the insights from the graph to suggest possible actions
-
-- This step often requires looking at other information beyond just what is in your graphs - it may be elsewhere in your data or external to it
-
-Examples:
-
-"Are these employees actually unusually healthy, or are they neglecting their health and likely to cost us more money in the long run? We should investigate."
-
-"We anticipate that corporate will be giving us more projects to reduce our indirect cost rate."
+]
 
 ---
 
-Graph Example 1
+# Highlights
+
+- Now that you have oriented your audience, you can easily bring their attention to the parts of the graph you want to highlight
+
+- Often it helps to literally point these things out (using a finger or laser pointer)!
+
+.pull-left[
+![](2019-11-14-DataVisualizationWorkshop_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+- Battery crimes spike in July and then plateau through October
+
+- Vehicle theft is more common than battery during the winter
+
+- Identity theft is high at the beginning of the year and declines sharply toward the end
+
+]
 
 ---
 
-Graph Example 2
+# A Note on Actionable Takeaways
+
+- This step often requires going beyond just the information in your graphs
+
+- You may have neither the information nor responsibility necessary to provide actionable takeaways
+
+- Often, your job is to break down complex data so that the people who *do* have the information and responsibility can do their job
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
