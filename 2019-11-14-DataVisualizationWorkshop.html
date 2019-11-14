@@ -337,7 +337,7 @@ Let's start by renaming axis labels:
 
 ```r
 cereal2 &lt;- cereal1 + 
-* labs(x = "", y = "Calories")
+* labs(x = "", y = "Calories per Serving")
 print(cereal2)
 ```
 
@@ -783,8 +783,9 @@ print(crime_facet)
 ```r
 crime_annotated &lt;- crime7 + 
 * annotate(geom = "text",
-*          x = 11, y = 900,
-*          label = "Identity Theft\nGoing Down"
+*          x = 1, y = 300,
+*          label = "Source: LAPD, https://data.lacity.org",
+*          hjust = 0
   )
 print(crime_annotated)
 ```

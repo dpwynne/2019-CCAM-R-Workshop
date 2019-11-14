@@ -327,7 +327,7 @@ Let's start by renaming axis labels:
 .pull-left[
 ```{r cereal-labels, fig.show = "hide"}
 cereal2 <- cereal1 + 
-  labs(x = "", y = "Calories") #<<
+  labs(x = "", y = "Calories per Serving") #<<
 print(cereal2)
 ```
 
@@ -755,8 +755,9 @@ print(crime_facet)
 ```{r crime-annotated, fig.show = "hide"}
 crime_annotated <- crime7 + 
   annotate(geom = "text", #<<
-           x = 11, y = 900, #<<
-           label = "Identity Theft\nGoing Down" #<<
+           x = 1, y = 300, #<<
+           label = "Source: LAPD, https://data.lacity.org", #<<
+           hjust = 0 #<<
   )
 print(crime_annotated)
 ```
